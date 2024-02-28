@@ -3,15 +3,15 @@
 
 using namespace std;
 
-class Pixel {
+class Color {
 public:
     double r;
     double g;
     double b;
 
-    Pixel() {}
+    Color() {}
 
-    Pixel(double r, double g, double b): r(r), g(g), b(b) {}
+    Color(double r, double g, double b) : r(r), g(g), b(b) {}
 };
 
-void PrintPhoto(vector<vector<Pixel>>& photo, int max_color = 255);
+void PrintPhoto(vector<vector<Color>> &photo, int max_color = 255);

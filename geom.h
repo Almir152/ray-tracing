@@ -1,4 +1,5 @@
 #include <cmath>
+#include "out.h"
 
 using namespace std;
 
@@ -15,7 +16,6 @@ public:
 
 };
 
-
 class Vector {
 public:
     double x;
@@ -26,7 +26,11 @@ public:
 
     Vector() {}
 
-    Vector(double x, double y, double z) : x(x), y(y), z(z), len(sqrt(x * x + y * y + z * z)) {}
+    Vector(double x, double y, double z) :
+            x(x),
+            y(y),
+            z(z),
+            len(sqrt(x * x + y * y + z * z)) {}
 
     Vector(Point beg, Point end) {
         x = end.x - beg.x;
@@ -34,55 +38,22 @@ public:
         z = end.z - beg.z;
         len = sqrt(x * x + y * y + z * z);
     }
-
-    Vector operator+(Vector b){
-        return Vector(x + b.x, y + b.y, z + b.z);
-    }
-
-    Vector operator-(Vector b){
-        return Vector(x - b.x, y - b.y, z - b.z);
-    }
 };
 
 double DotProd(Vector &l, Vector &r);
 
-double CrossProd(Vector &l, Vector &r);
-
-Vector Norm(Vector &v);
-
-Vector MultVec(Vector &a, double k);
-
+Vector Norm(Vector v);
 
 class Sphere {
 public:
     Point o;
     double r;
-    double color_r, color_g, color_b;
+    Color color;
 
     Sphere() {}
 
-    Sphere(Point o, double r, double color_r, double color_g, double color_b) :
+    Sphere(Point o, double r, Color color) :
             o(o),
             r(r),
-            color_r(color_r),
-            color_g(color_g),
-            color_b(color_b) {}
-};
-
-class Triangle {
-public:
-    Point a;
-    Point b;
-    Point c;
-
-    Triangle() {}
-
-    Triangle(Point a, Point b, Point c) : a(a), b(b), c(c) {}
-};
-
-bool InTriangle(Triangle &t, Point &p);
-
-
-class Screen {
-
+            color(color) {}
 };
