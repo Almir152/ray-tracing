@@ -1,3 +1,5 @@
+#pragma once
+
 #include <cmath>
 #include "out.h"
 
@@ -13,7 +15,6 @@ public:
     Point() {}
 
     Point(double x, double y, double z) : x(x), y(y), z(z) {}
-
 };
 
 class Vector {
@@ -21,7 +22,6 @@ public:
     double x;
     double y;
     double z;
-    double len;
 
 
     Vector() {}
@@ -29,31 +29,51 @@ public:
     Vector(double x, double y, double z) :
             x(x),
             y(y),
-            z(z),
-            len(sqrt(x * x + y * y + z * z)) {}
+            z(z) {}
 
     Vector(Point beg, Point end) {
         x = end.x - beg.x;
         y = end.y - beg.y;
         z = end.z - beg.z;
-        len = sqrt(x * x + y * y + z * z);
     }
+
+    double Len() const;
+
+    Vector Norm() const;
+
+    Vector Mult(double k) const;
+
+    static double DotProd(const Vector &l, const Vector &r);
+
+    Vector Sum(const Vector &vec) const;
+
+    Vector Reflect(Vector normal) const;
 };
 
-double DotProd(Vector &l, Vector &r);
 
-Vector Norm(Vector v);
+class Material {
+public:
+    double specular;
+
+    Material() {}
+
+    Material(double specular) :
+            specular(specular) {}
+
+};
 
 class Sphere {
 public:
     Point o;
     double r;
     Color color;
+    Material mat;
 
     Sphere() {}
 
-    Sphere(Point o, double r, Color color) :
+    Sphere(Point o, double r, Color color, Material mat) :
+            color(color),
             o(o),
             r(r),
-            color(color) {}
+            mat(mat) {}
 };

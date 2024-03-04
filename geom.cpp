@@ -1,10 +1,32 @@
 #include "geom.h"
 
-
-double DotProd(Vector &l, Vector &r) {
+double Vector::DotProd(const Vector &l, const Vector &r) {
     return l.x * r.x + l.y * r.y + l.z * r.z;
 }
 
-Vector Norm(Vector v) {
-    return Vector(v.x / v.len, v.y / v.len, v.z / v.len);
+double Vector::Len() const {
+    return sqrt(DotProd(*this, *this));
 }
+
+Vector Vector::Norm() const {
+    double lengh = (*this).Len();
+    return {x / lengh, y / lengh, z / lengh};
+}
+
+Vector Vector::Mult(double k) const {
+    return {x * k, y * k, z * k};
+}
+
+Vector Vector::Sum(const Vector &vec) const {
+    return {x + vec.x, y + vec.y, z + vec.z};
+}
+
+Vector Vector::Reflect(Vector norm) const {
+    Vector Nb = norm.Norm().Mult(-DotProd((*this).Mult(-1), norm.Norm()));
+    Vector Na = (*this).Sum(Nb.Mult(-1));
+    return {Na.Sum(Nb.Mult(-1))};
+}
+
+
+
+
