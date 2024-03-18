@@ -53,12 +53,18 @@ public:
 
 class Material {
 public:
+    double difAlbedo;
+    double specAlbedo;
     double specular;
+    double refl;
 
     Material() {}
 
-    Material(double specular) :
-            specular(specular) {}
+    Material(double difAlbedo, double specAlbedo, double specular, double refl) :
+            difAlbedo(difAlbedo),
+            specAlbedo(specular),
+            specular(specular),
+            refl(refl) {}
 
 };
 
@@ -76,4 +82,6 @@ public:
             o(o),
             r(r),
             mat(mat) {}
+
+    double intersection(Point &camera, Point &p) const;
 };

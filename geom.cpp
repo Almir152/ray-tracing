@@ -28,5 +28,22 @@ Vector Vector::Reflect(Vector norm) const {
 }
 
 
+double Sphere::intersection(Point &camera, Point &p) const {
+    Sphere sphere = *this;
+    Vector u = {sphere.o, camera};
+    Vector v = {camera, p};
 
+    double vv = Vector::DotProd(v, v);
+    double uu = Vector::DotProd(u, u);
+    double vu = Vector::DotProd(v, u);
 
+    double disc = vu * vu - vv * (uu - sphere.r * sphere.r);
+    if (disc < 0) {
+        return 1e9;
+    }
+
+    double k1 = (-vu + sqrt(disc)) / vv;
+    double k2 = (-vu - sqrt(disc)) / vv;
+    double k = min(k1, k2);
+    return k;
+}

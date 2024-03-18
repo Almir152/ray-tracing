@@ -28,26 +28,10 @@ public:
 void Drawing(Color &color_i_j, vector<Sphere> &spheres, vector<Light> &lights, Point &camera, Point &p) {
     double min_k = 1e9;
     Sphere drawn_sphere;
-    bool isexist = 0;
 
     // проходим по всем сферам
     for (auto sphere: spheres) {
-        Vector u = {sphere.o, camera};
-        Vector v = {camera, p};
-
-        double vv = Vector::DotProd(v, v);
-        double uu = Vector::DotProd(u, u);
-        double vu = Vector::DotProd(v, u);
-
-        double disc = vu * vu - vv * (uu - sphere.r * sphere.r);
-        if (disc < 0) {
-            continue;
-        }
-        isexist = 1;
-
-        double k1 = (-vu + sqrt(disc)) / vv;
-        double k2 = (-vu - sqrt(disc)) / vv;
-        double k = min(k1, k2);
+        double k = sphere.intersection(camera, p);
 
         if (k < min_k) {
             color_i_j = sphere.color;
@@ -61,12 +45,25 @@ void Drawing(Color &color_i_j, vector<Sphere> &spheres, vector<Light> &lights, P
                           camera.z + min_k * p.z};
     Vector normaled_from_center_to_point = Vector(drawn_sphere.o, sphere_point).Norm();
 
-    if (isexist) {
+    if (min_k < 1e9) {
         double dif = 0;
         double spec = 0;
 
         // проходим по источникам света
         for (auto light: lights) {
+
+            bool f = false;
+            // проходим по всем сферам для обнаружения других сфер
+            for (auto sphere: spheres) {
+                double k = sphere.intersection(light.p, sphere_point);
+
+                if (k < 0.99999999999) {
+                    f = true;
+                    break;
+                }
+            }
+            if (f) continue;
+
             Vector normaled_from_point_to_light = Vector(sphere_point, light.p).Norm();
 
             double diffuse = max(0.0, Vector::DotProd(normaled_from_center_to_point, normaled_from_point_to_light));
@@ -77,14 +74,17 @@ void Drawing(Color &color_i_j, vector<Sphere> &spheres, vector<Light> &lights, P
             dif += diffuse * light.power;
             spec += specular * light.power;
         }
-        color_i_j.r *= dif;
-        color_i_j.r += spec;
+        color_i_j.r *= dif * drawn_sphere.mat.difAlbedo;
+        color_i_j.r += spec * drawn_sphere.mat.specAlbedo;
+        color_i_j.r *= drawn_sphere.mat.refl;
 
-        color_i_j.g *= dif;
-        color_i_j.g += spec;
+        color_i_j.g *= dif * drawn_sphere.mat.difAlbedo;
+        color_i_j.g += spec * drawn_sphere.mat.specAlbedo;
+        color_i_j.g *= drawn_sphere.mat.refl;
 
-        color_i_j.b *= dif;
-        color_i_j.b += spec;
+        color_i_j.b *= dif * drawn_sphere.mat.difAlbedo;
+        color_i_j.b += spec * drawn_sphere.mat.specAlbedo;
+        color_i_j.b *= drawn_sphere.mat.refl;
     }
 }
 
@@ -109,21 +109,21 @@ int main() {
     Point camera = Point(0, 0, 0); // позиция игрока
 
     map<string, Material> Materials{
-            {"basa", Material(101)}
+            {"basa", Material(0.5, 0.3, 511, 0.8)}
     };
 
     // сферы:
     int sphereCol = 2;
     vector<Sphere> spheres = {
-            //Sphere({-0.4, 0.6, 7}, 1, {0.3, 0.3, 0.3}),
-            Sphere({0, 0, 5}, 1.2, {1, 0, 1}, Materials["basa"])
+            Sphere({1, 1.5, 5}, 1, {0.8, 0.7, 0.3}, Materials["basa"]),
+            Sphere({-1, -2, 6}, 1.2, {1, 0, 1}, Materials["basa"])
     };
 
     // источники света:
     int lightCol = 1;
     vector<Light> lights = {
             Light({4, 4, 2}, 1),
-            //Light({10, 0, 5}, 1)
+            Light({10, 0, 5}, 1)
     };
 
     Render(camera, photo, spheres, lights);
